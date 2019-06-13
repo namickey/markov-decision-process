@@ -30,3 +30,62 @@ class Environment():
     @property
     def row_length(self):
         return len(self.grid)
+
+    @property
+    def column_length(self):
+        return len(self.grid[0])
+
+    @property
+    def actions(self):
+        return [Action.UP, Action.DOWN, Action.LEFT, Action.RIGHT]
+
+    @property
+    def states(self):
+        states = []
+        for row in range(self.row_length):
+            for column in range(self.column_length):
+                if self.grid[row][column] != 9:
+                    states.append(State(row, column))
+        return states
+
+    def transit_func(self, state, action):
+        transition_probs = {}
+        if not self.can_action_at(state):
+            return transition_probs
+        opposite_direction = Action(action.value * -1)
+        for a in self.actions:
+            prob = 0
+            if a == action:
+                prob = self.move_prob
+            elif a != opposite_direction:
+                prob = (1 - self.move_prob) / 2
+
+            next_state = self._move(state, a)
+            if next_state not in transition_probs:
+                transition_probs[next_state] = prob
+            else:
+                transition_probs[next_state] += prob
+        return transition_probs
+
+    def can_action_at(self, state):
+        if self.grid[state.row][state.column] == 0:
+            return True
+        else:
+            return False
+
+    def _move(self, state, action):
+        if not self.can_action_at(state):
+            raise Exception("Can't move from here!")
+
+        next_state = state.clone()
+
+        if action == Action.UP:
+            next_state.row -= 1
+        elif action == Action.DOWN:
+            next_state.row += 1
+        elif action == Action.LEFT:
+            next_state.column -= 1
+        elif action == Action.RIGHT:
+            next_state.column += 1
+
+        

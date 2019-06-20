@@ -1,4 +1,6 @@
 #coding: utf-8
+from enum import Enum
+import numpy as np
 
 class State():
     def __init__(self, row=-1, column=-1):
@@ -135,4 +137,3 @@ class Environment():
         next_state = np.random.choice(next_states, p=probs)
         reward, done = self.reward_func(next_state)
         return next_state, reward, done
-        
